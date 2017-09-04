@@ -3,14 +3,18 @@ import {
     View,
     Text,
     StyleSheet,
-    StatusBar
+    StatusBar,
+    Alert
 } from 'react-native';
 
 StatusBar.setHidden(true);
 
 export default class App extends Component {
-    render() {
+    state = {
+        text: `Hello, I'm DHL`
+    }
 
+    render() {
         const {
             container,
             textWrapper,
@@ -19,9 +23,15 @@ export default class App extends Component {
 
         return (
             <View style={container}>
-                <View style={textWrapper}>
+                <View
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderGrant={() => this.setState({ text: 'Touched' })}
+                    onResponderRelease={() => Alert.alert('release')}
+                    style={textWrapper}
+                >
                     <Text style={text}>
-                        Hello, I'm DHL
+                        {this.state.text}
                     </Text>
                 </View>
             </View>
