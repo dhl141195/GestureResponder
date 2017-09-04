@@ -3,23 +3,71 @@ import {
     View,
     Text,
     StyleSheet,
-    StatusBar
+    StatusBar,
+    PanResponder
 } from 'react-native';
 
 StatusBar.setHidden(true);
 
 export default class App extends Component {
-    render() {
 
+    state = {
+        rootX: 0,
+        rootY: 0,
+        left: 0,
+        top: 0
+    }
+
+    componentWillMount() {
+        this.panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: () => true,
+            onPanResponderMove: this.onMoveHandler,
+            onPanResponderRelease: this.onReleaseHandler
+        })
+    }
+
+    onMoveHandler = (event, gestureState) => {
+        const { dx, dy } = gestureState;
+
+        // Set left, top bằng vị trí lúc bắt đầu drag + với distance X, Y đã kéo
+        this.setState(prevState => ({
+            left: prevState.rootX + dx,
+            top: prevState.rootY + dy,
+        }));
+    }
+
+    onReleaseHandler = (event, gestureState) => {
+        const { dx, dy } = gestureState;
+
+        // Sau khi release thì cập nhật vị trí hiện tại
+        this.setState(prevState => ({
+            rootX: prevState.rootX + dx,
+            rootY: prevState.rootY + dy
+        }));
+    }
+
+    render() {
         const {
             container,
             textWrapper,
             text
         } = styles;
 
+        const { left, top } = this.state;
+
         return (
             <View style={container}>
-                <View style={textWrapper}>
+                <View
+                    style={[
+                        textWrapper,
+                        {
+                            top,
+                            left
+                        }
+                    ]}
+                    {...this.panResponder.panHandlers}
+                >
                     <Text style={text}>
                         Hello, I'm DHL
                     </Text>
