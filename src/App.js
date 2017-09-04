@@ -19,8 +19,22 @@ export default class App extends Component {
 
         return (
             <View style={container}>
-                <View style={textWrapper}>
-                    <Text style={text}>
+                <View
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderGrant={() => console.log('Parent')}
+                    style={textWrapper}
+
+                    // Trong trường hợp nesting component, thêm cái này nếu muốn thằng cha được set responder
+                    // Còn không thì deepest responder component sẽ được chọn, trong trường hợp này là Text
+                    onStartShouldSetResponderCapture={() => true}
+                >
+                    <Text
+                        onStartShouldSetResponder={() => true}
+                        onMoveShouldSetResponder={() => true}
+                        onResponderGrant={() => console.log('Child')}
+                        style={text}
+                    >
                         Hello, I'm DHL
                     </Text>
                 </View>
