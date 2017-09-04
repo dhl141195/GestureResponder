@@ -13,9 +13,7 @@ export default class App extends Component {
 
     state = {
         rootX: 0,
-        rootY: 0,
-        left: 0,
-        top: 0
+        rootY: 0
     }
 
     componentWillMount() {
@@ -29,18 +27,25 @@ export default class App extends Component {
 
     onMoveHandler = (event, gestureState) => {
         const { dx, dy } = gestureState;
+        const { rootX, rootY } = this.state;
 
         // Set left, top bằng vị trí lúc bắt đầu drag + với distance X, Y đã kéo
-        this.setState(prevState => ({
-            left: prevState.rootX + dx,
-            top: prevState.rootY + dy,
-        }));
+        // Thay vì dùng state và update state thì dùng setNativeProps
+        // tránh việc re-render liên tục
+        this.panView.setNativeProps({
+            style: {
+                left: rootX + dx,
+                top: rootY + dy,
+            }
+        });
     }
 
     onReleaseHandler = (event, gestureState) => {
         const { dx, dy } = gestureState;
 
         // Sau khi release thì cập nhật vị trí hiện tại
+        // Nếu thích thì chỗ này có thể khai báo rootX và rootY thành instance var của class
+        // và this.rootX += dx; this.rootY += dy
         this.setState(prevState => ({
             rootX: prevState.rootX + dx,
             rootY: prevState.rootY + dy
@@ -54,18 +59,11 @@ export default class App extends Component {
             text
         } = styles;
 
-        const { left, top } = this.state;
-
         return (
             <View style={container}>
                 <View
-                    style={[
-                        textWrapper,
-                        {
-                            top,
-                            left
-                        }
-                    ]}
+                    ref={view => this.panView = view}
+                    style={textWrapper}
                     {...this.panResponder.panHandlers}
                 >
                     <Text style={text}>
